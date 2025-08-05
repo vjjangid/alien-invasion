@@ -12,7 +12,7 @@ class AlienInvasion:
 
         self.settings = Settings()
         self.clock = pygame.time.Clock()
-
+        self.moving_right = False
         self.screen = pygame.display.set_mode(
             (self.settings.screen_width, self.settings.screen_height)
         )
@@ -26,13 +26,34 @@ class AlienInvasion:
         """Start the main loop for the game."""
 
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
+            self._check_events()
+            self._update_screen()
 
-            # Redraw the screenn during each pass through the loop
-            self.screen.fill(self.bg_color)
-            self.ship.blitme()
-
-            pygame.display.flip()
             self.clock.tick(60)
+
+    def _check_events(self):
+        """REspond to keypresses and mouse events"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_l:
+                    self.moving_right = True
+                    # move the ship to right
+                    self.ship.rect.x += 1
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_l:
+                    self.moving_right = False
+
+    def _update_screen(self):
+        # Redraw the screenn during each pass through the loop
+        self.screen.fill(self.bg_color)
+        self.ship.blitme()
+
+        pygame.display.flip()
+
+    def update(self):
+        """Update the ship position based on the movement flag."""
+
+        if self.moving_right:
+            self.rect.x += 1
